@@ -1,0 +1,39 @@
+
+N
+java:S1602_",Remove useless curly braces around statement(…Ñµ§ùÿÿÿÿ8ÈèìŸ„2
+i
+java:S1612_"GReplace this lambda with method reference 'Throwable::printStackTrace'.(…Ñµ§ùÿÿÿÿ8ÈèìŸ„2
+I
+java:S1602c",Remove useless curly braces around statement(Ìú²§8ÈèìŸ„2
+N
+java:S1602q",Remove useless curly braces around statement(…Ñµ§ùÿÿÿÿ8ÉèìŸ„2
+i
+java:S1612q"GReplace this lambda with method reference 'Throwable::printStackTrace'.(…Ñµ§ùÿÿÿÿ8ÊèìŸ„2
+I
+java:S1602u",Remove useless curly braces around statement(Ìú²§8ÊèìŸ„2
+O
+java:S1602‹",Remove useless curly braces around statement(…Ñµ§ùÿÿÿÿ8ËèìŸ„2
+j
+java:S1612‹"GReplace this lambda with method reference 'Throwable::printStackTrace'.(…Ñµ§ùÿÿÿÿ8ËèìŸ„2
+J
+java:S1602",Remove useless curly braces around statement(Ìú²§8ËèìŸ„2
+^
+java:S1612"@Replace this lambda with method reference 'System.out::println'.(Ìú²§8ÌèìŸ„2
+O
+java:S1602£",Remove useless curly braces around statement(…Ñµ§ùÿÿÿÿ8ÍèìŸ„2
+j
+java:S1612£"GReplace this lambda with method reference 'Throwable::printStackTrace'.(…Ñµ§ùÿÿÿÿ8ÍèìŸ„2
+J
+java:S1602§",Remove useless curly braces around statement(Ìú²§8ÎèìŸ„2
+^
+java:S1612§"@Replace this lambda with method reference 'System.out::println'.(Ìú²§8ÎèìŸ„2
+O
+java:S1602´",Remove useless curly braces around statement(ñê†øÿÿÿÿ8ÏèìŸ„2
+O
+java:S1602·",Remove useless curly braces around statement(…Ñµ§ùÿÿÿÿ8ÏèìŸ„2
+j
+java:S1612·"GReplace this lambda with method reference 'Throwable::printStackTrace'.(…Ñµ§ùÿÿÿÿ8ÏèìŸ„2
+J
+java:S1602»",Remove useless curly braces around statement(Ìú²§8ĞèìŸ„2
+^
+java:S1612»"@Replace this lambda with method reference 'System.out::println'.(Ìú²§8ĞèìŸ„2
