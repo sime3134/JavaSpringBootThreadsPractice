@@ -45,13 +45,12 @@ public class BatchJobService {
         System.out.println("Number of documents: " + job.getNumberOfDocuments());
 
         Flux.fromIterable(job.getDocuments())
-                .flatMap(document -> archiveDocument(document, job), 10)
-                .collectList()
+                .flatMap(document -> archiveDocument(document, job), 20)
                 .doOnError(throwable -> {
                     job.setStatus(JobStatus.FAILED);
                     System.out.println("Job failed: " + job.getId());
                 })
-                .doOnSuccess(responseList -> {
+                .doOnComplete(() -> {
                     job.setStatus(JobStatus.COMPLETED);
                     System.out.println("Job completed: " + job.getId() + " with " + job.getDocuments().size() +
                             " documents");
@@ -64,17 +63,27 @@ public class BatchJobService {
         System.out.println("Number of documents: " + job.getNumberOfDocuments());
 
         Flux.range(0, job.getNumberOfDocuments())
-                .flatMap(documentIndex -> getMetadata(documentIndex, job), 10)
-                .collectList()
+                .flatMap(documentIndex -> getMetadata(documentIndex, job)
+                        .flatMap(metadata -> generateDocument(metadata, job))
+                        .flatMap(document -> uploadToCloud(document, job))
+                                .flatMap(document -> {
+                                    if(job.needsApproval()) {
+                                        job.addDocument(document);
+                                        return Mono.empty();
+                                    } else {
+                                        return archiveDocument(document, job);
+                                    }
+                                })
+                        , 10)
                 .doOnError(throwable -> {
                     job.setStatus(JobStatus.FAILED);
                     System.out.println("Archiving failed: " + job.getId());
                 })
-                .doOnSuccess(responseList -> {
+                .doOnComplete(() -> {
                     if(job.needsApproval()) {
-                        seekApproval(job);
-                        job.setStatus(JobStatus.PENDING_APPROVAL);
                         System.out.println("Job pending approval: " + job.getId());
+                        job.setStatus(JobStatus.PENDING_APPROVAL);
+                        seekApproval(job);
                     } else {
                         job.setStatus(JobStatus.COMPLETED);
                         System.out.println("Job completed: " + job.getId());
@@ -91,14 +100,8 @@ public class BatchJobService {
                 .retrieve()
                 .bodyToMono(String.class)
                 .subscribeOn(Schedulers.boundedElastic())
-                .flatMap(response -> generateDocument(response, job))
                 .doOnError(throwable -> {
-                    // Handle error if needed
                     throwable.printStackTrace();
-                })
-                .doOnSuccess(response -> {
-                    // Handle success if needed
-                    System.out.println("Metadata received: " + response);
                 });
     }
 
@@ -109,14 +112,8 @@ public class BatchJobService {
                 .retrieve()
                 .bodyToMono(String.class)
                 .subscribeOn(Schedulers.boundedElastic())
-                .flatMap(document -> uploadToCloud(document, job))
                 .doOnError(throwable -> {
-                    // Handle error if needed
                     throwable.printStackTrace();
-                })
-                .doOnSuccess(response -> {
-                    // Handle success if needed
-                    System.out.println("Document generated: " + documentName);
                 });
 
     }
@@ -128,21 +125,8 @@ public class BatchJobService {
                 .retrieve()
                 .bodyToMono(String.class)
                 .subscribeOn(Schedulers.boundedElastic())
-                .flatMap(response -> {
-                    if(job.needsApproval()) {
-                        job.addDocument(document);
-                        return Mono.just("Document uploaded to cloud");
-                    } else {
-                        return archiveDocument(document, job);
-                    }
-                })
                 .doOnError(throwable -> {
-                    // Handle error if needed
                     throwable.printStackTrace();
-                })
-                .doOnSuccess(response -> {
-                    // Handle success if needed
-                    System.out.println(response);
                 });
     }
 
@@ -161,12 +145,7 @@ public class BatchJobService {
                     }
                 })
                 .doOnError(throwable -> {
-                    // Handle error if needed
                     throwable.printStackTrace();
-                })
-                .doOnSuccess(response -> {
-                    // Handle success if needed
-                    System.out.println(response);
                 }).subscribe();
     }
 
@@ -181,12 +160,7 @@ public class BatchJobService {
                     job.incrementFinishedDocuments();
                 })
                 .doOnError(throwable -> {
-                    // Handle error if needed
                     throwable.printStackTrace();
-                })
-                .doOnSuccess(response -> {
-                    // Handle success if needed
-                    System.out.println(response);
                 });
     }
 
